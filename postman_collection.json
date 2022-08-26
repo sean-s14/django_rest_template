@@ -1,0 +1,451 @@
+{
+	"info": {
+		"_postman_id": "17ee6f54-73ea-4380-8f37-8e2cea2197ec",
+		"name": "Django Rest Template",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "20765732"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "User List (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ip}}/auth/users/admin/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"users",
+								"admin",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User List",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ip}}/auth/users/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"users",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Detail (Token)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ip}}/auth/user/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "User Detail (PK) (Admin)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ip}}/auth/users/admin/1/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"users",
+								"admin",
+								"1",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Foreign User Detail (PK)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{ip}}/auth/user/10/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"10",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test04@gmail.com\",\r\n    \"password\": \"S3an1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ip}}/auth/user/create/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"create",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Verify User",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "username",
+									"value": "test01",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "test01@gmail.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "S3an1234",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "501001",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{local}}/api/token/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"api",
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login (Get Token)",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "email",
+									"value": "s.stocker04@outlook.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "are59576",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "username",
+									"value": "sean01",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "S3an1234",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{ip}}/api/token/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"api",
+								"token",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test01\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/auth/user/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Change Pass (Token)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"old_password\": \"S3an12345\",\r\n    \"new_password\": \"S3an1234\",\r\n    \"new_password2\": \"S3an1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/auth/user/change-password/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"change-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Pass (Stage 1: Email)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test01@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/auth/user/reset-password/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"reset-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Pass (Stage 2: prev + Code)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test01@gmail.com\",\r\n    \"code\": \"501001\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/auth/user/reset-password/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"reset-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Pass (Stage 3: prev + Password)",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"test01@gmail.com\",\r\n    \"code\": \"501001\",\r\n    \"new_password\": \"S3an12345\",\r\n    \"new_password2\": \"S3an12345\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}/auth/user/reset-password/",
+							"host": [
+								"{{local}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"reset-password",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Account",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"password\": \"S3an1234\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{ip}}/auth/user/",
+							"host": [
+								"{{ip}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjYxNTU1NzEwLCJpYXQiOjE2NjE1NTU0MTAsImp0aSI6ImM3ZjM2YTkwNDk1YTQ4Zjg4N2ZmNzVkNmQ2ZjM2Yjg2IiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJzZWFuMDEiLCJlbWFpbCI6InMuc3RvY2tlcjA0QG91dGxvb2suY29tIn0.rHKQtS0v1jZXbHA2FoZl8_We1rDUBJ30WnzHAViJdLE",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "local",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "ip",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

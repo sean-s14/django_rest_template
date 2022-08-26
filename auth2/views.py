@@ -1,50 +1,57 @@
+# Built-in
 import json
 
 # Django
-from django.shortcuts import render, get_object_or_404
-from django.contrib.auth import authenticate, login, get_user_model
-from django.conf import settings
+from django.shortcuts import get_object_or_404
+from django.contrib.auth import authenticate, get_user_model
 
 # Rest Framework
 from rest_framework.generics import (
-    ListCreateAPIView,
     RetrieveUpdateDestroyAPIView,
+    RetrieveAPIView,
+    ListAPIView,
     CreateAPIView,
     UpdateAPIView,
 )
-from rest_framework.permissions import IsAdminUser, AllowAny
+from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
 # Custom
 from .serializers import (
+    ForeignUserSerializer,
     UserSerializer,
     UserVerificationSerializer,
     PasswordResetSerializer,
     PasswordChangeSerializer,
 )
+from .permissions import IsUserOrAdmin
 from .email import send_email
 from .utils import code_generator
 
 UserModel = get_user_model()
 
 
-class UserList(ListCreateAPIView):
+class UserList(ListAPIView):
+    queryset = UserModel.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [IsAdminUser]
+
+
+class ForeignUserList(ListAPIView):
+    queryset = UserModel.objects.all()
+    serializer_class = ForeignUserSerializer
+    permission_classes = []
+    authentication_classes = []
+
+
+class UserCreate(CreateAPIView):
     """A view to create a new user. However only the admin can view all users."""
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
-    # authentication_classes = []
-
-    def get(self, request, *args, **kwargs):
-        if self.request.user.is_staff:
-            return self.list(request, *args, **kwargs)
-        else:
-            return Response(
-                {"error": "Only an admin user can view all users"},
-                status=status.HTTP_403_FORBIDDEN
-            )
+    permission_classes = []
+    authentication_classes = []
 
     def post(self, request, *args, **kwargs):
         user = self.request.user
@@ -89,13 +96,20 @@ class UserList(ListCreateAPIView):
         return {"data": serializer.data, "headers": headers} 
 
 
+class ForeignUserDetail(RetrieveAPIView):
+    """A view for anonymous users to view all users, typically for leaderboards."""
+    queryset = UserModel.objects.all()
+    serializer_class = ForeignUserSerializer
+    permission_classes = []
+    authentication_classes = []
+
+
 class UserDetail(RetrieveUpdateDestroyAPIView):
     """A view to retrieve, update and delete a user. However only the user specified 
     in `request.user` can perform actions to update or delete"""
     queryset = UserModel.objects.all()
     serializer_class = UserSerializer
-    # permission_classes = [IsUserOrAdminOrReadOnly]
-    # permission_classes = []
+    permission_classes = [IsUserOrAdmin]
 
     def change_password(self, data):
         user = self.request.user
@@ -125,48 +139,17 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
         if request.path == '/auth/user/change-password/':
             return self.change_password(data)
 
-        if request.path == '/auth/user/delete-account/':
-            return self.delete(request, *args, **kwargs)
-
         return self.partial_update(request, *args, **kwargs)
 
-    def get_object(self):
-        return self.request.user
-
     def get(self, request, *args, **kwargs):
+        if self.request.user.is_staff:
+            return super().get(self, request, *args, **kwargs)
 
-        # Uses pk to retrieve another users data (for leaderboards & friends)
-        if request.path != '/auth/user/':
-            pk = None
-            for key, val in kwargs.items():
-                print(key, val)
-                pk = val if key == 'pk' else None
-
-            if pk is not None:
-                user = get_object_or_404(UserModel, pk=pk)
-
-                # TODO: Add more info here
-                user_data = {
-                    "username": user.username,
-                }
-
-                return Response(user_data, status=status.HTTP_200_OK)
-
-            return Response(
-                {"error": "Could not retrieve this users data"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # If user is retrieving ones own data
-
-        # Uses token to retrieve user data
         request_token = request._auth
 
         if request_token is not None:
             request_token = str(request._auth)
-
             user = AccessToken(request_token)
-
             payload = user.payload
             # Remove unnecessary data
             del payload["token_type"]
@@ -288,7 +271,7 @@ class UserResetPassword(UpdateAPIView):
 class UserVerification(UpdateAPIView):
     serializer_class = UserVerificationSerializer
     queryset = UserModel.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = []
     authentication_classes = []
 
     def patch(self, request, *args, **kwargs):
