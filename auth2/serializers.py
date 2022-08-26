@@ -7,11 +7,18 @@ from rest_framework import serializers
 UserModel = get_user_model()
 
 
+class ForeignUserSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserModel
+        fields = ("id", "username",)
+
+
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ('id', 'email', 'username', 'password') #, 'user_profile')
+        fields = ('id', 'email', 'username', 'password')
         read_only_fields = ('id', )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -28,7 +35,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         if blacklist is not None:
             for item in blacklist:
-                if username == item.lower().strip():
+                if item.lower().strip() in username:
                     raise serializers.ValidationError("This username is not allowed")
 
         if '@' in username:
