@@ -21,7 +21,7 @@ class UserAdmin(UserAdmin):
         }),
     )
     list_filter = ('is_staff', 'is_active', 'is_verified')
-    list_display = ('username', 'email', 'is_active', 'is_staff', 'is_verified')
+    list_display = ('username', 'email', 'is_active', 'is_staff', 'is_verified', 'date_joined')
 
 
 admin.site.register(User, UserAdmin)
