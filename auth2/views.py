@@ -141,12 +141,14 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
 
         return self.partial_update(request, *args, **kwargs)
 
+    # def get_object(self):
+    #     return self.request.user
+
     def get(self, request, *args, **kwargs):
         if self.request.user.is_staff:
             return super().get(self, request, *args, **kwargs)
 
         request_token = request._auth
-
         if request_token is not None:
             request_token = str(request._auth)
             user = AccessToken(request_token)

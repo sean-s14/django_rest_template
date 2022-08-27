@@ -11,14 +11,14 @@ class ForeignUserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ("id", "username",)
+        fields = ("id", "username", "imageURI")
 
 
 class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserModel
-        fields = ('id', 'email', 'username', 'password')
+        fields = ('id', 'email', 'username', 'password', 'is_verified', 'is_active', 'date_joined')
         read_only_fields = ('id', )
         extra_kwargs = {
             'password': {'write_only': True},
@@ -71,7 +71,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserVerificationSerializer(serializers.Serializer):
-    """Serializer with 1 field \"code\"."""
+    """Serializer with 1 field 'code'."""
     code = serializers.CharField(min_length=6, max_length=6)
 
     class Meta:
