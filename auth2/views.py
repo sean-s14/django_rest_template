@@ -16,7 +16,7 @@ from rest_framework.generics import (
 from rest_framework.permissions import IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.tokens import AccessToken
+from rest_framework_simplejwt.tokens import AccessToken, RefreshToken
 
 # Custom
 from .serializers import (
@@ -134,7 +134,14 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
     def patch(self, request, *args, **kwargs):
         body = request.body
         data = json.loads(body.decode('utf-8'))
-        print("Data :", data)
+        print("\nData :", data)
+
+        # If using access token instead of pk
+        if self.kwargs.get('pk', None) is None:
+            # Get user_id from access token
+            self.kwargs['pk'] = self.request._auth.get('user_id', None)
+            kwargs['token'] = True
+            return self.partial_update(request, *args, **kwargs)
 
         if request.path == '/auth/user/change-password/':
             return self.change_password(data)
@@ -143,6 +150,32 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
 
     # def get_object(self):
     #     return self.request.user
+    
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        token = kwargs.pop('token', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+
+        if token:
+            refresh = RefreshToken.for_user(instance)
+            refresh['username']    = instance.username
+            refresh['email']       = instance.email
+            refresh['is_verified'] = instance.is_verified
+            refresh['is_active']   = instance.is_active
+            refresh['date_joined'] = str(instance.date_joined)
+            return Response({
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+                },
+                status=status.HTTP_200_OK
+            )
+        return Response(serializer.data)
 
     def get(self, request, *args, **kwargs):
         if self.request.user.is_staff:

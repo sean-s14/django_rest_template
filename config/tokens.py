@@ -48,6 +48,8 @@ class MyTokenObtainSerializer(TokenObtainSerializer):
             authenticate_kwargs[self.username_field] = attrs[self.username_field]
         if attrs.get(self.email_field, None) is not None:
             authenticate_kwargs[self.email_field] = attrs[self.email_field]
+        if len(authenticate_kwargs.keys()) < 2:
+            raise Exception("Unable to authenticate. Username or Email was not provided")
             
         try:
             authenticate_kwargs["request"] = self.context["request"]
