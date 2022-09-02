@@ -61,6 +61,14 @@ class UserCreate(CreateAPIView):
                 status=status.HTTP_403_FORBIDDEN
             )
 
+        password1 = request.data.get('password', None)
+        password2 = request.data.get('password2', None)
+        if password1 != password2:
+            return Response(
+                { "password2": "Does not match first password" },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         user_data = self.create(request, *args, **kwargs)  # ID, Email & Username
         # print(user_data)
 
