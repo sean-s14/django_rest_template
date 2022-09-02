@@ -134,7 +134,15 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
     def patch(self, request, *args, **kwargs):
         body = request.body
         data = json.loads(body.decode('utf-8'))
-        print("\nData :", data)
+        # print("\nData :", data)
+        print("Keys:", list(data.keys()))
+        image = data.get('imageURI', None)
+        # print("Image:", image)
+        if image is not None: print("\nImage:", image[100])
+        # print("\nData :", data.get('imageURI', None)[100])
+
+        if request.path == '/auth/user/change-password/':
+            return self.change_password(data)
 
         # If using access token instead of pk
         if self.kwargs.get('pk', None) is None:
@@ -142,9 +150,6 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
             self.kwargs['pk'] = self.request._auth.get('user_id', None)
             kwargs['token'] = True
             return self.partial_update(request, *args, **kwargs)
-
-        if request.path == '/auth/user/change-password/':
-            return self.change_password(data)
 
         return self.partial_update(request, *args, **kwargs)
 
@@ -169,6 +174,8 @@ class UserDetail(RetrieveUpdateDestroyAPIView):
             refresh['is_verified'] = instance.is_verified
             refresh['is_active']   = instance.is_active
             refresh['date_joined'] = str(instance.date_joined)
+            # Don't return imageURI everytime. Only when requested
+            refresh['imageURI']   = instance.imageURI
             return Response({
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
@@ -230,7 +237,7 @@ class UserResetPassword(UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         body = request.body
         data = json.loads(body.decode('utf-8'))
-        print(data)
+        # print(data)
         print('reset')
         
         email = data.get("email", None)

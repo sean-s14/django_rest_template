@@ -117,6 +117,7 @@ class MyTokenObtainPairSerializer(MyTokenObtainSerializer):
         token['is_verified'] = user.is_verified
         token['is_active']   = user.is_active
         token['date_joined'] = str(user.date_joined)
+        token['imageURI']    = user.imageURI
         return token
 
 
