@@ -83,10 +83,20 @@ class PasswordResetSerializer(serializers.Serializer):
     code = serializers.CharField(min_length=6, max_length=6)
 
     def validate_code(self, value):
+        email = self._kwargs.get('data', None).get('email', None)
+
+        try:
+            user = UserModel.objects.get(email=email)
+        except Exception as e:
+            raise serializers.ValidationError("No user exists with the specified email")
+
+        if user.code is None or value != user.code:
+            raise serializers.ValidationError("The code entered is incorrect")
+
         try:
             int(value)
         except ValueError as e:
-            raise serializers.ValidationError({"error": "Code cannot contain letters"})
+            raise serializers.ValidationError("Code cannot contain letters")
         return value
 
 
@@ -97,6 +107,14 @@ class PasswordChangeSerializer(serializers.Serializer):
     new_password = serializers.CharField(min_length=8, max_length=128, write_only=True,)
     new_password2 = serializers.CharField(min_length=8, max_length=128, write_only=True,)
 
+    def validate_email(self, value):
+        try:
+            user = UserModel.objects.get(email=value)
+        except Exception as e:
+            raise serializers.ValidationError("No user exists with the specified email")
+
+        return value
+
     def validate(self, attrs):
         old_password = attrs.get("old_password", None)
         email = attrs.get("email", None)
@@ -106,7 +124,7 @@ class PasswordChangeSerializer(serializers.Serializer):
             raise serializers.ValidationError({"error": "Sorry, something went wrong try again later"})
 
         if attrs['new_password'] != attrs['new_password2']:
-            raise serializers.ValidationError({"error": "Password fields didn't match"})
+            raise serializers.ValidationError({"new_password2": "Password fields didn't match"})
         return attrs
 
     def update(self, instance, validated_data):

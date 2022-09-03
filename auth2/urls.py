@@ -26,7 +26,7 @@ urlpatterns = [
     path('users/', ForeignUserList.as_view(), name='foreign_user_list'),
 
     # Passwords
-    path('user/reset-password/', UserResetPassword.as_view(), name='password_reset'),
+    path('user/reset-password/<int:stage>/', UserResetPassword.as_view(), name='password_reset'),
     path('user/change-password/', UserDetail.as_view(), name='password_change'),
     # path('user/delete-account/', UserDetail.as_view(), name='delete_account'),
 ]

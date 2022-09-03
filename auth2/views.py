@@ -245,77 +245,65 @@ class UserResetPassword(UpdateAPIView):
     def patch(self, request, *args, **kwargs):
         body = request.body
         data = json.loads(body.decode('utf-8'))
-        # print(data)
-        print('reset')
-        
+        keys = data.keys()
+
+        stage = kwargs.get('stage', None)
         email = data.get("email", None)
+        
         if email is None: 
             return Response(
                 {"error": "No email was provided"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         try:
             user = UserModel.objects.get(email=email)
         except Exception as e:
             return Response(
-                {"error": "No user exists with the specified email"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        keys = data.keys()
-        # STEP 1: Send code as text/email
-        if len(keys) == 1:
-            user.code = code_generator()
-            user.save()
-            print("Code:", user.code)
-            
-            # TODO: Send text containing 6 digit code
-            msg = f"Your Django Rest Template verification code is: {user.code}"
-            send_email(email=email, html_content=msg)
-            return Response(
-                {"success": f"A code has been sent to {email} with a verification code"},
-                status=status.HTTP_200_OK,
-            )
-
-        # STEP 2: Confirm the code sent
-        if len(keys) == 2:
-            if 'email' in keys and 'code' in keys:                
-                serializer = PasswordResetSerializer(data=data)
-                if serializer.is_valid():
-                    for key, val in serializer.validated_data.items():
-                        if key == 'code':
-                            if user.code is not None and val == user.code:
-                                return Response(
-                                    {"success": "Code Confirmed! Enter your new password"},
-                                    status=status.HTTP_200_OK,
-                                )
-                            else:
-                                return Response(
-                                    {"error": "The code entered is incorrect"},
-                                    status=status.HTTP_400_BAD_REQUEST,
-                                )
-                else:
-                    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-            else: 
-                return Response(
-                    {"error": "Something went wrong, try again"}, 
-                    status=status.HTTP_400_BAD_REQUEST
+                {"email": "No user exists with the specified email"},
+                status=status.HTTP_404_NOT_FOUND
                 )
 
-        # Step 3: Serialize data and save
-        serializer = PasswordChangeSerializer(user, data=data)
-        if serializer.is_valid():
-            print(serializer.validated_data)
-            print(serializer.errors)
-            serializer.save()
-            return Response(
-                {"success": "Your password has been updated"},
-                status=status.HTTP_200_OK,
-            )
+        if stage == 1:
+            # STEP 1: Send code as text/email
+            if len(keys) == 1:
+                user.code = code_generator()
+                user.save()
+                print("Code:", user.code)
+                
+                # TODO: Send text containing 6 digit code
+                msg = f"Your Django Rest Template verification code is: {user.code}"
+                send_email(email=email, html_content=msg)
+                return Response(
+                    {"success": f"A code has been sent to {email} with a verification code"},
+                    status=status.HTTP_200_OK,
+                )
+        elif stage == 2:
+            # STEP 2: Confirm the code sent
+            serializer = PasswordResetSerializer(data=data)
+            if serializer.is_valid():
+                return Response(
+                    {"success": "Code Confirmed! Enter your new password"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif stage == 3:
+            # Step 3: Serialize data and save
+            serializer = PasswordChangeSerializer(user, data=data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(
+                    {"success": "Your password has been updated"},
+                    status=status.HTTP_200_OK,
+                )
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return self.partial_update(request, *args, **kwargs)
+            return Response(
+                {'error': 'Stage of specified number does not exist'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserVerification(UpdateAPIView):
