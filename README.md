@@ -1,5 +1,8 @@
 # Django Skeleton
 
+**Note:** For further customization of authentication visit [Django docs](https://docs.djangoproject.com/en/4.0/topics/auth/customizing/)
+
+---
 **What does this skeleton include?**
 - Custom authentication with username/email login capablities
 - `.env` file with variables set for sendgrid, stripe and more...
