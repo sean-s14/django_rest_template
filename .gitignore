@@ -1,6 +1,6 @@
 db.sqlite3
 __pycache__
 # migrations
-# config/.env  # Add this after
+# config/.env
 .venv/*
 todo.md

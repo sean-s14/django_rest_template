@@ -90,16 +90,24 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': BASE_DIR / 'db.sqlite3',
+    # },
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME':     os.environ.get('DB_NAME', None),
+        'USER':     os.environ.get('DB_USER', None),
+        'PASSWORD': os.environ.get('DB_PASSWORD', None),
+        'HOST':     os.environ.get('DB_HOST', None),
+        'PORT':     os.environ.get('DB_PORT', None),
     }
 }
 
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
+DATABASES['default'].update(db_from_env) if os.environ.get('DJANGO_DEV', None) == 'False' else None
 
 
 # Password validation
