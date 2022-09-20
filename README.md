@@ -1,4 +1,4 @@
-# Django Skeleton
+# Django Rest Template
 
 **Note:** For further customization of authentication visit [Django docs](https://docs.djangoproject.com/en/4.0/topics/auth/customizing/)
 
@@ -34,6 +34,8 @@ git commit -m "Initial Commit"
 git remote add origin <path>
 git push -u origin main
 ```
+
+Create another database in pgAdmin 4 and change the necessary variables in `.env`
 
 ```bash
 python manage.py migrate

@@ -107,7 +107,7 @@ DATABASES = {
 
 import dj_database_url
 db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env) if os.environ.get('DJANGO_DEV', None) == 'False' else None
+DATABASES['default'].update(db_from_env) if os.environ.get('DJANGO_DEV', False) == False else None
 
 
 # Password validation
